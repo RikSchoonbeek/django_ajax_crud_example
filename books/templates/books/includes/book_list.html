@@ -13,6 +13,9 @@
         <button type="button" class="btn btn-danger btn-sm delete-book-btn" id="{% url 'delete_book' book.pk %}">
           Delete
         </button>
+        <button type="button" class="btn btn-success btn-sm update-book-btn" id="{% url 'update_book' book.pk %}">
+          Update
+        </button>
       </td>
     </tr>
   {% endfor %}

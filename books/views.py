@@ -20,22 +20,47 @@ def book_list(request):
     return JsonResponse(data)
 
 
-def add_book(request):
+def add_book(request, book_pk=None):
     data = {}
     if request.method == 'POST':
         form = AddBookForm(request.POST)
         if form.is_valid():
-            form.save()
             data['form_is_valid'] = True
+            if book_pk:
+                # If book_pk: get book, update and save
+                book = get_object_or_404(Book, pk=book_pk)
+                book.title = form.cleaned_data['title']
+                book.author = form.cleaned_data['author']
+                book.save()
+            else:
+                # Else: just save
+                form.save()
+        # Form not valid
         else:
             data['form_is_valid'] = False
     else:
-        form = AddBookForm()
-    context = {'form': form}
-    html_form = render_to_string('books/includes/add_book_form.html',
-                                 context,
-                                 request=request,
-                                 )
+        context = {}
+        if book_pk:
+            book = get_object_or_404(Book, pk=book_pk)
+            # Instantiate form with initialized data from book
+            form = AddBookForm(initial={'title': book.title,
+                                        'author': book.author,})
+            # Generate context with form and book_pk to create correct action url
+            context['form'] = form
+            context['book_pk'] = book_pk
+            # render_to_string the form
+            html_form = render_to_string('books/includes/update_book_form.html',
+                                         context,
+                                         request=request,
+                                         )
+        else:
+            form = AddBookForm()
+            context['form'] = form
+            html_form = render_to_string('books/includes/add_book_form.html',
+                                         context,
+                                         request=request,
+                                         )
+
     data['html_form'] = html_form
     return JsonResponse(data)
 

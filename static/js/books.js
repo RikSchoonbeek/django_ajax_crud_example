@@ -37,6 +37,8 @@ $(function () {
   // On loading of the page get the book list.
   $.fn.getBookList();
 
+  // Add book
+  // Can this be modified to update the book as well?
   $("#modal-book").on("submit", ".js-book-create-form", function () {
     var form = $(this);
     $.ajax({
@@ -59,7 +61,7 @@ $(function () {
   // Click event listener on #book-table-container with selector for .delete-book-btn
   // To delete selected book on click of delete button
   $("#book-table-container").on("click", ".delete-book-btn", function() {
-    var button = $(this)
+    var button = $(this);
     $.ajax({
       url: button.attr("id"),
       type: 'get',
@@ -70,5 +72,20 @@ $(function () {
     });
   });
 
+  $("#book-table-container").on("click", ".update-book-btn", function() {
+    var button = $(this);
+    $.ajax({
+      url: button.attr("id"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-book").modal("show");
+      },
+      success: function (data) {
+        // set form html as model content
+        $("#modal-book .modal-content").html(data.html_form);
+      }
+    });
+  });
 
 });
